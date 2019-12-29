@@ -10,6 +10,7 @@
 
 import os
 import ctypes
+import pyodbc
 import sys
 from ctypes import *
 from numpy import *
@@ -177,9 +178,50 @@ class CollectData:
                         self.time = self.time + 1
                         self.original_df = self.original_df.append(temp_df)
                         
-                        if self.time==14:                            
-                            self.original_df.to_csv(self.profile_loc+self.profile_name+'.csv',index=False)
-                            print("trial completed: ",self.trial_no+1)
+                        if self.time==14:
+                            con=pyodbc.connect(
+                            "Driver={SQL Server Native Client 11.0};"
+                            "Server=DESKTOP-P6JG3OO\OMAMASQL;"  
+                            "Database=ml;"
+                            "Trusted_Connection=yes;"    
+                            )
+
+                            cursor=con.cursor()
+
+                            for i in self.original_df.values:
+                                    System_time=i[0]
+                                    Index_no=i[1]
+                                    Trial_no=i[2]
+                                    Label=i[3]
+                                    Time_of_Trial=i[4]
+                                    #Features=i[1]
+                                    
+                                    Sensor1=i[5]
+                                    Sensor2=i[6]
+                                    Sensor3=i[7]
+                                    Sensor4=i[8]
+                                    Sensor5=i[9]
+                                    Sensor6=i[10]
+                                    Sensor7=i[11]
+                                    Sensor8=i[12]
+                                    Sensor9=i[13]
+                                    Sensor10=i[14]
+                                    Sensor11=i[15]
+                                    Sensor12=i[16]
+                                    Sensor13=i[17]
+                                    Sensor14=i[18]
+                                    cursor.execute('''insert into database_name (System_time,Index_no,Trial_no,Label,Time_of_Trial,Sensor1,Sensor2,Sensor3,Sensor4,Sensor5,
+                                                                          Sensor6,Sensor7,Sensor8,Sensor9,Sensor10,Sensor11,
+                                                                          Sensor12,Sensor13,Sensor14
+                                             ) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);''', (System_time,Index_no,Trial_no,Label,Time_of_Trial,Sensor1,Sensor2,Sensor3,Sensor4,Sensor5,
+                                              Sensor6,Sensor7,Sensor8,Sensor9,Sensor10,Sensor11,
+                                              Sensor12,Sensor13,Sensor14
+                                             ) )
+                        con.commit() 
+
+                            
+                            #self.original_df.to_csv(self.profile_loc+self.profile_name+'.csv',index=False)
+                            #print("trial completed: ",self.trial_no+1)
                             
                     if self.time==1 or self.time==14:
                         self.choice = random.choice(['A','B'])
